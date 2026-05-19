@@ -227,14 +227,40 @@ canvas {
 <h1 style="color:#50bda1">🌈 dB Scout</h1>
 <p>Windows Chrome Tablet Edition</p>
 
-<div style="background:#fff0f0;border:2px solid #ff7e67;border-radius:20px;padding:25px;margin-top:30px;">
-<h3 style="color:#d32f2f">⚠️ Medical Red Flags</h3>
-<ul>
-<li>Sudden hearing loss</li>
-<li>Ear pain or drainage</li>
-<li>Dizziness or tinnitus</li>
-<li>Facial weakness</li>
-</ul>
+<div style="background: #fff0f0; border: 2px solid #ff7e67; border-radius: 20px; padding: 25px; margin: 30px 0; text-align: left; font-size: 1.05rem; color: #333; line-height: 1.6;">
+
+    <h3 style="color: #d32f2f; margin-top: 0; font-size: 1.35rem;">
+        ⚠️ Medical Red Flags
+    </h3>
+
+    <p style="font-weight:bold; margin-bottom:12px;">
+        Consult a doctor immediately if you have:
+    </p>
+
+    <ul style="padding-left: 24px; margin: 0;">
+
+        <li>Sudden, rapidly progressive, or fluctuating hearing loss</li>
+
+        <li>Active drainage, bleeding, pressure, or pain in the ear</li>
+
+        <li>Visible foreign objects or significant wax buildup</li>
+
+        <li>Tinnitus (ringing), dizziness, imbalance, or vertigo</li>
+
+        <li>Facial weakness or facial nerve paralysis</li>
+
+        <li>One-sided hearing loss or major difference between ears</li>
+
+        <li>History of loud noise trauma or ear injury</li>
+
+        <li>Persistent fullness or blocked sensation in the ear</li>
+
+        <li>Difficulty understanding speech even when sounds seem loud enough</li>
+
+        <li>Any sudden change or specific concern regarding your hearing</li>
+
+    </ul>
+
 </div>
 
 <button class="btn" onclick="init()">
@@ -309,20 +335,85 @@ Your Results 🌟
 <canvas id="c"></canvas>
 
 <div id="gapAlert" class="asymmetry-alert hidden">
-<h3>⚠️ Asymmetric Profile Detected</h3>
-<p>
-Large differences between ears were detected.
-Please seek professional evaluation.
-</p>
+
+    <h4>
+        ⚠️ Attention: Asymmetric Profile Detected
+    </h4>
+
+    <p style="margin-bottom:12px;">
+
+        There is a significant difference between your left and right ears.
+
+    </p>
+
+    <p style="margin-bottom:12px;">
+
+        This type of asymmetry can sometimes be associated with medical conditions involving the ear, auditory nerve, or hearing pathway.
+
+    </p>
+
+    <p style="margin-bottom:12px;">
+
+        We strongly recommend scheduling a professional hearing evaluation and medical assessment as soon as possible.
+
+    </p>
+
+    <p style="margin:0; font-weight:bold; color:#d32f2f;">
+
+        Sudden asymmetry or rapidly worsening hearing should be treated urgently.
+
+    </p>
+
 </div>
 
 <div class="advisory-box">
-<h3>ℹ️ Recommendations</h3>
-<ul>
-<li>Affordable hearing enhancement devices: CAD 300–400</li>
-<li>Professional hearing aids: CAD 2000–3500 per device</li>
-<li>Consult hearing specialist for full evaluation</li>
-</ul>
+
+    <h4>
+        ℹ️ Recommendations & Next Steps
+    </h4>
+
+    <p style="margin: 0 0 14px 0;">
+
+        If your profile shows hearing difficulties, consider the following next steps:
+
+    </p>
+
+    <ul>
+
+        <li>
+            Schedule a professional hearing evaluation for a complete assessment.
+        </li>
+
+        <li>
+            Protect your hearing by lowering headphone volume and limiting loud noise exposure.
+        </li>
+
+        <li>
+            See our associates for affordable hearing enhancement solutions, typically around
+            <strong>CAD 300–400</strong>.
+        </li>
+
+        <li>
+            Professional hearing aids may range from
+            <strong>CAD 2000–3500 per device</strong>
+            depending on technology level and features.
+        </li>
+
+        <li>
+            Difficulty hearing conversations, TV, or speech in noise may indicate hearing loss even if tones sound acceptable.
+        </li>
+
+        <li>
+            If symptoms worsen suddenly, seek immediate medical attention.
+        </li>
+
+        <li>
+            For assistance, consultations, or hearing aid guidance, contact our team directly at:
+            <strong>PH: 1-800-000-0000</strong>
+        </li>
+
+    </ul>
+
 </div>
 
 <button class="btn" onclick="exitToSlideshow()">
@@ -468,42 +559,41 @@ function changeVol(v) {
 
 function step() {
 
-    res[ear].push(parseInt(document.getElementById('slide').value));
+    // SAVE CURRENT RESULT
+    res[ear].push(parseInt(document.getElementById("slide").value));
 
-    document.getElementById('slide').value = -15;
+    // RESET SLIDER
+    document.getElementById("slide").value = -15;
+    document.getElementById("label").innerText = "Level: -15 dB";
 
+    // FINAL STEP CHECK
+    if (ear === "Right" && idx === freqs.length - 1) {
+
+        finish();
+        return;
+
+    }
+
+    // NEXT FREQUENCY
     idx++;
 
-    if(idx >= freqs.length) {
+    // SWITCH TO RIGHT EAR
+    if (idx >= freqs.length) {
 
-        if(ear === 'Left') {
-
-            ear = 'Right';
-            idx = 0;
-            setup();
-
-        } else {
-
-    // mute instantly before results page
-    if (gain) {
-        gain.gain.setValueAtTime(0, ctx.currentTime);
-    }
-
-    finish();
-}
-
-    } else {
-
-        setup();
+        ear = "Right";
+        idx = 0;
 
     }
+
+    // LOAD NEXT TEST
+    setup();
+
 }
 
-function finish() {
+    function finish() {
 
     // STOP AUDIO COMPLETELY
     if (osc) {
-
         try {
             osc.stop();
         } catch(e) {}
@@ -516,28 +606,20 @@ function finish() {
         try {
             gain.disconnect();
         } catch(e) {}
-        gain = null;
     }
 
-    if (pan) {
-        try {
-            pan.disconnect();
-        } catch(e) {}
-        pan = null;
-    }
-
-    // Hide testing page
+    // HIDE TEST PAGE
     document.getElementById("p2").classList.add("hidden");
 
-    // Show results page
+    // SHOW RESULT PAGE
     document.getElementById("p3").classList.remove("hidden");
 
-    // Check asymmetry
+    // CHECK FOR ASYMMETRY
     let hasHugeGap = false;
 
     for (let i = 0; i < freqs.length; i++) {
 
-        if (Math.abs(res.Left[i] - res.Right[i]) > 30) {
+        if (Math.abs(res.Left[i] - res.Right[i]) >= 25) {
             hasHugeGap = true;
         }
 
@@ -545,10 +627,13 @@ function finish() {
 
     if (hasHugeGap) {
         document.getElementById("gapAlert").classList.remove("hidden");
+    } else {
+        document.getElementById("gapAlert").classList.add("hidden");
     }
 
-    // Draw graph
+    // DRAW GRAPH
     draw();
+
 }
 
 function showCal() {
