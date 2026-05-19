@@ -1,16 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8" />
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>dB Scout</title>
+<title>dB Scout - Production</title>
 
 <style>
 
+*{
+    box-sizing:border-box;
+}
+
 body{
     margin:0;
-    font-family:Arial, sans-serif;
+    font-family:Arial,sans-serif;
     background:#fdfae6;
     overflow:hidden;
 }
@@ -19,11 +26,16 @@ body{
     display:none !important;
 }
 
+//////////////////////////////////////////////////////
+/* PAGE 0 SLIDESHOW */
+//////////////////////////////////////////////////////
+
 #p0{
     position:fixed;
     inset:0;
     background:#000;
     overflow:hidden;
+    z-index:999;
     cursor:pointer;
 }
 
@@ -36,7 +48,7 @@ body{
     position:absolute;
     inset:0;
     opacity:0;
-    transition:opacity 1s;
+    transition:opacity 1s ease;
 }
 
 .slide-wrapper.active{
@@ -51,48 +63,61 @@ body{
 
 .overlay{
     position:absolute;
-    bottom:50px;
+    bottom:60px;
     left:50%;
     transform:translateX(-50%);
-    background:rgba(255,255,255,0.9);
+    background:rgba(255,255,255,0.92);
     padding:25px 40px;
     border-radius:25px;
     text-align:center;
-    z-index:10;
+    z-index:5;
+    width:90%;
+    max-width:650px;
 }
 
 .overlay h1{
-    margin:0;
     color:#50bda1;
+    margin:0;
     font-size:2.5rem;
 }
 
 .overlay p{
     margin-top:10px;
+    font-size:1.5rem;
     color:#ff7e67;
-    font-size:1.4rem;
     font-weight:bold;
+    animation:pulse 2s infinite;
 }
 
+@keyframes pulse{
+    0%{opacity:0.5}
+    50%{opacity:1}
+    100%{opacity:0.5}
+}
+
+//////////////////////////////////////////////////////
+/* APP */
+//////////////////////////////////////////////////////
+
 #app{
-    max-width:850px;
+    width:100%;
+    max-width:900px;
     margin:auto;
-    background:white;
     min-height:100vh;
+    background:white;
     overflow-y:auto;
     padding:40px;
-    box-sizing:border-box;
 }
 
 .btn{
     width:100%;
-    padding:22px;
     border:none;
-    border-radius:40px;
-    background:#ff7e67;
-    color:white;
-    font-size:1.4rem;
+    border-radius:50px;
+    padding:24px;
+    font-size:1.5rem;
     font-weight:bold;
+    color:white;
+    background:#ff7e67;
     cursor:pointer;
     margin-top:25px;
 }
@@ -101,60 +126,185 @@ body{
     transform:scale(0.98);
 }
 
+.green{
+    background:#50bda1;
+}
+
+.dark{
+    background:#333;
+}
+
+.warning-box{
+    background:#fff0f0;
+    border:2px solid #ff7e67;
+    padding:25px;
+    border-radius:20px;
+    text-align:left;
+    margin-top:30px;
+}
+
+.warning-box h3{
+    color:#d32f2f;
+}
+
 .slider-box{
     margin-top:40px;
+    background:#f7f7f7;
+    padding:30px;
+    border-radius:25px;
 }
 
 input[type=range]{
     width:100%;
+    margin-top:25px;
 }
 
 canvas{
     width:100%;
-    height:300px;
+    height:320px;
     border:1px solid #ddd;
-    margin-top:20px;
+    border-radius:15px;
+    margin-top:25px;
+}
+
+.advisory-box{
+    background:#f0f9f6;
+    border:2px solid #50bda1;
+    padding:25px;
+    border-radius:20px;
+    margin-top:25px;
+    text-align:left;
+}
+
+.alert-box{
+    background:#fff0f0;
+    border:2px solid #ff7e67;
+    padding:25px;
+    border-radius:20px;
+    margin-top:25px;
+    text-align:left;
+}
+
+.corner-link{
+    position:absolute;
+    top:20px;
+    right:20px;
+    background:#eee;
+    padding:10px 16px;
+    border-radius:20px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.play-btn{
+    padding:10px 20px;
+    border:none;
+    border-radius:10px;
+    background:#50bda1;
+    color:white;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.cal-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 0;
+    border-bottom:1px solid #eee;
 }
 
 </style>
+
 </head>
 
 <body>
 
+//////////////////////////////////////////////////////
 <!-- PAGE 0 -->
+//////////////////////////////////////////////////////
+
 <div id="p0">
 
     <div id="slideContainer"></div>
 
     <div class="overlay">
-        <h1>🌈 dB Scout</h1>
-        <p>TAP ANYWHERE TO START</p>
+
+        <h1>🌈 dB Scout Experience</h1>
+
+        <p>👉 TAP ANYWHERE TO START ASSESSMENT</p>
+
     </div>
 
 </div>
 
-<!-- MAIN APP -->
+//////////////////////////////////////////////////////
+<!-- APP -->
+//////////////////////////////////////////////////////
+
 <div id="app" class="hidden">
 
+    <span
+        id="calLink"
+        class="corner-link"
+        onclick="showCalibration()"
+    >
+        🔒 Calibration
+    </span>
+
+    //////////////////////////////////////////////////////
     <!-- PAGE 1 -->
+    //////////////////////////////////////////////////////
+
     <div id="p1">
 
-        <h1 style="color:#50bda1;">🌈 dB Scout</h1>
+        <h1 style="color:#50bda1;">
+            🌈 dB Scout
+        </h1>
 
-        <p>Windows Chrome Tablet Edition</p>
+        <p>
+            Windows Chrome Tablet Edition
+        </p>
 
-        <button class="btn" onclick="startAssessment()">
-            START ASSESSMENT
+        <div class="warning-box">
+
+            <h3>⚠️ Medical Red Flags</h3>
+
+            <ul>
+                <li>Sudden hearing loss</li>
+                <li>Ear pain or bleeding</li>
+                <li>Tinnitus or dizziness</li>
+                <li>Visible wax blockage</li>
+                <li>Facial weakness</li>
+            </ul>
+
+        </div>
+
+        <button
+            class="btn"
+            onclick="startAssessment()"
+        >
+            UNLOCK AUDIO & BEGIN
         </button>
 
     </div>
 
+    //////////////////////////////////////////////////////
     <!-- PAGE 2 -->
+    //////////////////////////////////////////////////////
+
     <div id="p2" class="hidden">
 
-        <h2 id="earLabel">LEFT EAR</h2>
+        <h2 id="earLabel">
+            LEFT EAR
+        </h2>
 
-        <h1 id="freqLabel">500 Hz</h1>
+        <h1
+            id="freqLabel"
+            style="font-size:4rem;color:#ff7e67;"
+        >
+            500 Hz
+        </h1>
 
         <div class="slider-box">
 
@@ -168,107 +318,123 @@ canvas{
                 oninput="updateVolume(this.value)"
             >
 
-            <h2 id="dbLabel">-15 dB</h2>
+            <h2 id="dbLabel">
+                Level: -15 dB
+            </h2>
 
         </div>
 
-        <button class="btn" onclick="nextStep()">
+        <button
+            class="btn green"
+            onclick="nextStep()"
+        >
             SAVE & NEXT
         </button>
 
     </div>
 
-    <!-- PAGE 3 -->
+    //////////////////////////////////////////////////////
+    <!-- CALIBRATION -->
+    //////////////////////////////////////////////////////
+
+    <div id="pCal" class="hidden">
+
+        <h1 style="color:#50bda1;">
+            Calibration
+        </h1>
+
+        <div id="calibrationList"></div>
+
+        <button
+            class="btn dark"
+            onclick="goHome()"
+        >
+            SAVE & EXIT
+        </button>
+
+    </div>
+
+    //////////////////////////////////////////////////////
+    <!-- RESULTS -->
+    //////////////////////////////////////////////////////
+
     <div id="p3" class="hidden">
 
         <h1 style="color:#50bda1;">
-            Your Results
+            Your Results 🌟
         </h1>
 
         <canvas id="chart"></canvas>
 
-        <button class="btn" onclick="goHome()">
-            RETURN HOME
+        <div
+            id="asymmetryAlert"
+            class="alert-box hidden"
+        >
+
+            <h3>
+                ⚠️ Asymmetric Hearing Detected
+            </h3>
+
+            <p>
+                Large differences between ears detected.
+                Please consult a hearing professional.
+            </p>
+
+        </div>
+
+        <div class="advisory-box">
+
+            <h3>
+                ℹ️ Recommendations
+            </h3>
+
+            <ul>
+                <li>
+                    Affordable hearing enhancement:
+                    CAD 300–400
+                </li>
+
+                <li>
+                    Professional hearing aids:
+                    CAD 2000–3500
+                </li>
+            </ul>
+
+        </div>
+
+        <button
+            class="btn"
+            onclick="goHome()"
+        >
+            RETURN TO HOME SCREEN
         </button>
 
     </div>
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 
 //////////////////////////////////////////////////////
-// SLIDESHOW
+// SUPABASE
 //////////////////////////////////////////////////////
 
-const testImages = [
+const SUPABASE_URL =
+"https://otffjqbukzlsbptelyjh.supabase.co";
 
-    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1600",
+const SUPABASE_ANON_KEY =
+"YOUR_ANON_KEY";
 
-    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600",
-
-    "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?q=80&w=1600"
-
-];
-
-let slideIndex = 0;
-let slideInterval = null;
-
-function loadSlides(){
-
-    const container =
-        document.getElementById("slideContainer");
-
-    container.innerHTML = "";
-
-    testImages.forEach((url,index)=>{
-
-        const div = document.createElement("div");
-
-        div.className =
-            index === 0
-            ? "slide-wrapper active"
-            : "slide-wrapper";
-
-        div.innerHTML = `
-            <img src="${url}" />
-        `;
-
-        container.appendChild(div);
-
-    });
-
-}
-
-function rotateSlides(){
-
-    const slides =
-        document.querySelectorAll(".slide-wrapper");
-
-    if(slides.length === 0) return;
-
-    slides[slideIndex]
-        .classList.remove("active");
-
-    slideIndex =
-        (slideIndex + 1) % slides.length;
-
-    slides[slideIndex]
-        .classList.add("active");
-
-}
-
-function startSlideshow(){
-
-    clearInterval(slideInterval);
-
-    slideInterval =
-        setInterval(rotateSlides,10000);
-
-}
+const supabaseClient =
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
 
 //////////////////////////////////////////////////////
-// AUDIO TEST
+// VARIABLES
 //////////////////////////////////////////////////////
 
 const freqs = [500,1000,2000,4000];
@@ -278,18 +444,121 @@ let results = {
     Right:[]
 };
 
+let offsets = {
+    500:0,
+    1000:0,
+    2000:0,
+    4000:0
+};
+
 let currentEar = "Left";
 let currentFreqIndex = 0;
 
 let audioCtx = null;
 let oscillator = null;
 let gainNode = null;
+let panner = null;
+
+let slideIndex = 0;
+let slideInterval = null;
+
+let idleTimer = null;
+
+//////////////////////////////////////////////////////
+// LOAD SLIDES
+//////////////////////////////////////////////////////
+
+async function loadSlides(){
+
+    try{
+
+        const {data,error} =
+        await supabaseClient
+        .from("kiosk_slideshows")
+        .select("image_urls")
+        .eq("kiosk_id","kiosk_01")
+        .single();
+
+        if(error){
+
+            console.error(error);
+
+            return;
+
+        }
+
+        const container =
+        document.getElementById("slideContainer");
+
+        container.innerHTML = "";
+
+        data.image_urls.forEach((url,index)=>{
+
+            const div =
+            document.createElement("div");
+
+            div.className =
+            index === 0
+            ? "slide-wrapper active"
+            : "slide-wrapper";
+
+            div.innerHTML =
+            `<img src="${url}" />`;
+
+            container.appendChild(div);
+
+        });
+
+    }catch(err){
+
+        console.error(err);
+
+    }
+
+}
+
+//////////////////////////////////////////////////////
+// ROTATE SLIDES
+//////////////////////////////////////////////////////
+
+function rotateSlides(){
+
+    const slides =
+    document.querySelectorAll(".slide-wrapper");
+
+    if(slides.length === 0) return;
+
+    slides[slideIndex]
+    .classList.remove("active");
+
+    slideIndex =
+    (slideIndex + 1) % slides.length;
+
+    slides[slideIndex]
+    .classList.add("active");
+
+}
+
+//////////////////////////////////////////////////////
+// START SLIDESHOW
+//////////////////////////////////////////////////////
+
+function startSlideshow(){
+
+    clearInterval(slideInterval);
+
+    slideInterval =
+    setInterval(rotateSlides,10000);
+
+}
+
+//////////////////////////////////////////////////////
+// OPEN APP
+//////////////////////////////////////////////////////
 
 document
 .getElementById("p0")
-.addEventListener("click",openWelcomePage);
-
-function openWelcomePage(){
+.addEventListener("click",()=>{
 
     document
     .getElementById("p0")
@@ -299,15 +568,38 @@ function openWelcomePage(){
     .getElementById("app")
     .classList.remove("hidden");
 
+    resetIdle();
+
+});
+
+//////////////////////////////////////////////////////
+// IDLE TIMER
+//////////////////////////////////////////////////////
+
+function resetIdle(){
+
+    clearTimeout(idleTimer);
+
+    idleTimer =
+    setTimeout(goHome,120000);
+
 }
+
+document.body.addEventListener("click",resetIdle);
+document.body.addEventListener("mousemove",resetIdle);
+document.body.addEventListener("touchstart",resetIdle);
+
+//////////////////////////////////////////////////////
+// START TEST
+//////////////////////////////////////////////////////
 
 async function startAssessment(){
 
     if(!audioCtx){
 
         audioCtx =
-            new(window.AudioContext ||
-            window.webkitAudioContext)();
+        new(window.AudioContext ||
+        window.webkitAudioContext)();
 
     }
 
@@ -325,6 +617,10 @@ async function startAssessment(){
 
 }
 
+//////////////////////////////////////////////////////
+// SETUP TONE
+//////////////////////////////////////////////////////
+
 function setupTone(){
 
     if(oscillator){
@@ -336,43 +632,62 @@ function setupTone(){
     }
 
     oscillator =
-        audioCtx.createOscillator();
+    audioCtx.createOscillator();
 
     gainNode =
-        audioCtx.createGain();
+    audioCtx.createGain();
+
+    panner =
+    audioCtx.createStereoPanner();
+
+    panner.pan.value =
+    currentEar === "Left"
+    ? -1
+    : 1;
 
     oscillator.frequency.value =
-        freqs[currentFreqIndex];
+    freqs[currentFreqIndex];
 
     gainNode.gain.value = 0;
 
     oscillator
-        .connect(gainNode)
-        .connect(audioCtx.destination);
+    .connect(gainNode)
+    .connect(panner)
+    .connect(audioCtx.destination);
 
     oscillator.start();
 
     document
     .getElementById("earLabel")
     .innerText =
-        currentEar.toUpperCase() + " EAR";
+    currentEar.toUpperCase() + " EAR";
 
     document
     .getElementById("freqLabel")
     .innerText =
-        freqs[currentFreqIndex] + " Hz";
+    freqs[currentFreqIndex] + " Hz";
 
 }
+
+//////////////////////////////////////////////////////
+// UPDATE VOLUME
+//////////////////////////////////////////////////////
 
 function updateVolume(v){
 
     document
     .getElementById("dbLabel")
     .innerText =
-        v + " dB";
+    "Level: " + v + " dB";
+
+    const freq =
+    freqs[currentFreqIndex];
+
+    const adjusted =
+    parseFloat(v) + offsets[freq];
 
     const gain =
-        Math.pow(10,(v - 70)/20);
+    Math.pow(10,(adjusted - 70)/20);
 
     gainNode.gain.setTargetAtTime(
         gain,
@@ -382,14 +697,18 @@ function updateVolume(v){
 
 }
 
+//////////////////////////////////////////////////////
+// NEXT STEP
+//////////////////////////////////////////////////////
+
 function nextStep(){
 
     const val =
-        parseInt(
-            document
-            .getElementById("volumeSlider")
-            .value
-        );
+    parseInt(
+        document
+        .getElementById("volumeSlider")
+        .value
+    );
 
     results[currentEar].push(val);
 
@@ -424,6 +743,10 @@ function nextStep(){
 
 }
 
+//////////////////////////////////////////////////////
+// FINISH
+//////////////////////////////////////////////////////
+
 function finishAssessment(){
 
     try{
@@ -438,48 +761,191 @@ function finishAssessment(){
     .getElementById("p3")
     .classList.remove("hidden");
 
+    let asymmetry = false;
+
+    for(let i=0;i<freqs.length;i++){
+
+        if(
+            Math.abs(
+                results.Left[i] -
+                results.Right[i]
+            ) > 30
+        ){
+
+            asymmetry = true;
+
+        }
+
+    }
+
+    if(asymmetry){
+
+        document
+        .getElementById("asymmetryAlert")
+        .classList.remove("hidden");
+
+    }
+
     drawChart();
 
 }
 
+//////////////////////////////////////////////////////
+// DRAW GRAPH
+//////////////////////////////////////////////////////
+
 function drawChart(){
 
     const canvas =
-        document.getElementById("chart");
+    document.getElementById("chart");
 
     const ctx =
-        canvas.getContext("2d");
+    canvas.getContext("2d");
 
     canvas.width =
-        canvas.offsetWidth;
+    canvas.offsetWidth;
 
-    canvas.height = 300;
+    canvas.height = 320;
 
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
 
     ctx.font = "20px Arial";
 
     ctx.fillText(
-        "Assessment Complete",
-        50,
-        50
+        "Audiogram",
+        30,
+        40
     );
 
-    ctx.fillText(
-        "Left Ear: " +
-        results.Left.join(", "),
-        50,
-        120
-    );
+    freqs.forEach((f,i)=>{
 
-    ctx.fillText(
-        "Right Ear: " +
-        results.Right.join(", "),
-        50,
-        170
+        ctx.fillText(
+            f + "Hz",
+            100 + i*150,
+            300
+        );
+
+    });
+
+    function plot(data,color,symbol){
+
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 3;
+
+        ctx.beginPath();
+
+        data.forEach((v,i)=>{
+
+            const x =
+            100 + i*150;
+
+            const y =
+            50 + ((v + 20) * 2);
+
+            if(i===0){
+
+                ctx.moveTo(x,y);
+
+            }else{
+
+                ctx.lineTo(x,y);
+
+            }
+
+            ctx.fillText(
+                symbol,
+                x-5,
+                y+5
+            );
+
+        });
+
+        ctx.stroke();
+
+    }
+
+    plot(results.Left,"blue","X");
+    plot(results.Right,"red","O");
+
+}
+
+//////////////////////////////////////////////////////
+// CALIBRATION
+//////////////////////////////////////////////////////
+
+function showCalibration(){
+
+    document
+    .getElementById("p1")
+    .classList.add("hidden");
+
+    document
+    .getElementById("pCal")
+    .classList.remove("hidden");
+
+    const list =
+    document.getElementById("calibrationList");
+
+    list.innerHTML = "";
+
+    freqs.forEach(freq=>{
+
+        list.innerHTML += `
+
+        <div class="cal-item">
+
+            <div>
+                <strong>${freq}Hz</strong>
+            </div>
+
+            <div>
+
+                <button onclick="adjustOffset(${freq},-1)">
+                    -
+                </button>
+
+                <span id="offset-${freq}">
+                    ${offsets[freq]}
+                </span>
+
+                <button onclick="adjustOffset(${freq},1)">
+                    +
+                </button>
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+function adjustOffset(freq,amount){
+
+    offsets[freq] += amount;
+
+    document
+    .getElementById(`offset-${freq}`)
+    .innerText = offsets[freq];
+
+    localStorage.setItem(
+        "hearing_offsets",
+        JSON.stringify(offsets)
     );
 
 }
+
+//////////////////////////////////////////////////////
+// HOME
+//////////////////////////////////////////////////////
 
 function goHome(){
 
@@ -491,6 +957,15 @@ function goHome(){
 // START
 //////////////////////////////////////////////////////
 
+const saved =
+localStorage.getItem("hearing_offsets");
+
+if(saved){
+
+    offsets = JSON.parse(saved);
+
+}
+
 loadSlides();
 
 startSlideshow();
@@ -498,4 +973,5 @@ startSlideshow();
 </script>
 
 </body>
+
 </html>
