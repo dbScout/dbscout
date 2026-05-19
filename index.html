@@ -163,7 +163,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script>
+
     // Filter-proof list assembly to beat background system trunctation
     let freqs = new Array();
     freqs.push(Number("500"));
@@ -209,52 +209,34 @@ const supabaseClient = supabase.createClient(
 
 async function loadRemoteSlides() {
 
-    try {
+    const testImages = [
+        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1600",
+        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600",
+        "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?q=80&w=1600"
+    ];
 
-        const { data, error } = await supabaseClient
-            .from('kiosk_slideshows')
-            .select('image_urls')
-            .eq('kiosk_id', 'kiosk_01')
-            .single();
+    const container = document.getElementById('slideContainer');
 
-        if (error) {
-            console.error(error);
-            return;
-        }
+    container.innerHTML = '';
 
-        if (!data || !data.image_urls || data.image_urls.length === 0) {
-            console.log('No slideshow images found');
-            return;
-        }
+    testImages.forEach((url, index) => {
 
-        const container = document.getElementById('slideContainer');
+        const slide = document.createElement('div');
 
-        container.innerHTML = '';
+        slide.className =
+            index === 0
+            ? 'slide-wrapper active'
+            : 'slide-wrapper';
 
-        data.image_urls.forEach((url, index) => {
+        slide.innerHTML = `
+            <img src="${url}" />
+        `;
 
-            const slide = document.createElement('div');
+        container.appendChild(slide);
 
-            slide.className = index === 0
-                ? 'slide-wrapper active'
-                : 'slide-wrapper';
+    });
 
-            slide.innerHTML = `
-                <img src="${url}">
-            `;
-
-            container.appendChild(slide);
-
-        });
-
-        console.log('Slides loaded from Supabase');
-
-    } catch(err) {
-
-        console.error('Slide load failed:', err);
-
-    }
-
+    console.log("Slides loaded");
 }
 
     function startSlideshowTimer() {
