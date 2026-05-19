@@ -59,19 +59,20 @@
             overflow: hidden; 
         }
 
-        .slide-wrapper {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: none;
-            background: #000;
+        .slide-wrapper { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            display: none; 
+            background-color: #000;
+            overflow: hidden;
         }
 
-        .slide-wrapper.active {
-            display: block;
-            animation: fadeIn 0.8s ease-in-out;
+        .slide-wrapper.active { 
+            display: block; 
+            animation: fadeIn 0.8s ease-in-out; 
         }
 
         .slide-wrapper img {
@@ -80,9 +81,9 @@
             object-fit: cover;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0.3; }
-            to { opacity: 1; }
+        @keyframes fadeIn { 
+            from { opacity: 0.3; } 
+            to { opacity: 1; } 
         }
 
         .slideshow-ui { 
@@ -122,11 +123,7 @@
         }
 
         h1 { font-size: 2.5rem; }
-
-        p { 
-            font-size: 1.2rem; 
-            line-height: 1.6; 
-        }
+        p { font-size: 1.2rem; line-height: 1.6; }
 
         .btn { 
             background: #ff7e67; 
@@ -147,8 +144,69 @@
             transform: scale(0.98); 
         }
 
+        .slider-box { 
+            margin: 35px 0; 
+            padding: 35px 30px; 
+            background: #f9f9f9; 
+            border-radius: 24px; 
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.03); 
+        }
+
+        .slider-box input[type="range"] { 
+            -webkit-appearance: none; 
+            appearance: none; 
+            width: 100%; 
+            height: 24px; 
+            background: #e0f2f1; 
+            border-radius: 12px; 
+            outline: none; 
+            margin: 25px 0; 
+            cursor: pointer; 
+        }
+
+        .slider-box input[type="range"]::-webkit-slider-thumb { 
+            -webkit-appearance: none; 
+            appearance: none; 
+            width: 44px; 
+            height: 44px; 
+            border-radius: 50%; 
+            background: #ff7e67; 
+            cursor: pointer; 
+        }
+
         .hidden { 
             display: none; 
+        }
+
+        canvas { 
+            background: white; 
+            border: 1px solid #ddd; 
+            margin-top: 20px; 
+            width: 100%; 
+            height: 280px; 
+            border-radius: 15px; 
+            display: block; 
+        }
+
+        .corner-link { 
+            position: absolute; 
+            top: 25px; 
+            right: 30px; 
+            color: #777; 
+            cursor: pointer; 
+            text-decoration: none; 
+            font-size: 0.9rem; 
+            font-weight: bold; 
+            background: #f0f0f0; 
+            padding: 8px 14px; 
+            border-radius: 20px; 
+            border: 1px solid #ddd; 
+            transition: 0.2s; 
+            z-index: 1010; 
+        }
+
+        @media (min-width: 768px) { 
+            #app { padding: 60px; } 
         }
     </style>
 </head>
@@ -157,11 +215,26 @@
 
 <div id="app">
 
+    <span id="p1-header-link" class="corner-link hidden" onclick="showCal()">🔒 Pro Calibration</span>
+
     <!-- PAGE 0 -->
     <div id="p0" onclick="startApp()">
 
         <div id="slideContainer" class="slide-container">
-            <!-- Slides load from Supabase -->
+
+            <!-- FALLBACK SLIDES -->
+            <div class="slide-wrapper active">
+                <img src="https://picsum.photos/1400/900?1">
+            </div>
+
+            <div class="slide-wrapper">
+                <img src="https://picsum.photos/1400/900?2">
+            </div>
+
+            <div class="slide-wrapper">
+                <img src="https://picsum.photos/1400/900?3">
+            </div>
+
         </div>
 
         <div class="slideshow-ui">
@@ -174,12 +247,51 @@
     <!-- PAGE 1 -->
     <div id="p1" class="hidden">
 
-        <h1 style="color:#50bda1;">🌈 dB Scout</h1>
+        <h1 style="color:#50bda1; margin-bottom: 5px; margin-top: 15px;">
+            🌈 dB Scout
+        </h1>
 
-        <p>Windows Chrome Tablet Edition</p>
+        <p style="margin-top: 0; color: #666;">
+            Windows Chrome Tablet Edition
+        </p>
 
-        <button id="startBtn" class="btn" onclick="alert('Your original app continues here')">
+        <button id="startBtn" class="btn" onclick="init()">
             UNLOCK AUDIO & BEGIN
+        </button>
+
+    </div>
+
+    <!-- PAGE 2 -->
+    <div id="p2" class="hidden">
+
+        <div id="tag" style="font-weight:bold; font-size: 1.6rem;">
+            LEFT EAR
+        </div>
+
+        <h2 id="freq" style="color:#ff7e67; font-size: 4rem; margin: 20px 0;">
+            500 Hz
+        </h2>
+
+        <div class="slider-box">
+
+            <input
+                type="range"
+                id="slide"
+                min="-15"
+                max="70"
+                step="5"
+                value="-15"
+                oninput="changeVol(this.value)"
+            >
+
+            <p id="label" style="font-size: 2.2rem; margin: 15px 0; font-weight: bold; color: #333;">
+                Level: -15 dB
+            </p>
+
+        </div>
+
+        <button class="btn" style="background:#50bda1" onclick="step()">
+            SAVE & NEXT
         </button>
 
     </div>
@@ -192,8 +304,11 @@
 // SUPABASE CONFIG
 //////////////////////////////////////////////////////
 
-const SUPABASE_URL = "https://otffjqbukzlsbptelyjh.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90ZmZqcWJ1a3psc2JwdGVseWpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODA1MzMsImV4cCI6MjA5NDY1NjUzM30.NzHVg4UI50Q-cIb5jdsiv209fmK7ExvEeO-zvo8BzZE";
+const SUPABASE_URL =
+"https://otffjqbukzlsbptelyjh.supabase.co";
+
+const SUPABASE_ANON_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90ZmZqcWJ1a3psc2JwdGVseWpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODA1MzMsImV4cCI6MjA5NDY1NjUzM30.NzHVg4UI50Q-cIb5jdsiv209fmK7ExvEeO-zvo8BzZE";
 
 const supabaseClient = supabase.createClient(
     SUPABASE_URL,
@@ -201,8 +316,30 @@ const supabaseClient = supabase.createClient(
 );
 
 //////////////////////////////////////////////////////
-// GLOBALS
+// ORIGINAL VARIABLES
 //////////////////////////////////////////////////////
+
+let freqs = [500,1000,2000,4000];
+
+let res = {
+    Left: [],
+    Right: []
+};
+
+let ear = "Left";
+let idx = 0;
+
+let ctx = null;
+let osc = null;
+let gain = null;
+let pan = null;
+
+let offsets = {
+    500:0,
+    1000:0,
+    2000:0,
+    4000:0
+};
 
 let slideIndex = 0;
 let slideInterval = null;
@@ -210,48 +347,46 @@ let idleTimer = null;
 let appActive = false;
 
 //////////////////////////////////////////////////////
-// LOAD SLIDES FROM SUPABASE
+// LOAD REMOTE SLIDES
 //////////////////////////////////////////////////////
 
-async function loadSlides() {
+async function loadRemoteSlides() {
 
     try {
 
-        console.log("Loading slideshow...");
-
         const { data, error } = await supabaseClient
             .from('kiosk_slideshows')
-            .select('*')
+            .select('image_urls')
             .eq('kiosk_id', 'kiosk_01')
             .single();
 
-        if (error) {
+        if(error) {
 
-            console.error("Supabase Error:", error);
-
-            loadFallbackSlides();
+            console.error(error);
 
             return;
         }
 
-        console.log("Slide Data:", data);
+        if(
+            !data ||
+            !data.image_urls ||
+            data.image_urls.length === 0
+        ) {
 
-        if (!data || !data.image_urls || data.image_urls.length === 0) {
-
-            console.error("No slideshow images found");
-
-            loadFallbackSlides();
+            console.log("No slides found");
 
             return;
         }
 
-        const container = document.getElementById("slideContainer");
+        const container =
+            document.getElementById("slideContainer");
 
         container.innerHTML = "";
 
-        data.image_urls.forEach((url, index) => {
+        data.image_urls.forEach((url,index)=>{
 
-            const slide = document.createElement("div");
+            const slide =
+                document.createElement("div");
 
             slide.className =
                 index === 0
@@ -266,78 +401,39 @@ async function loadSlides() {
 
         });
 
-        startSlideshowTimer();
+        console.log("Slides loaded");
 
-    } catch (err) {
+    } catch(err) {
 
-        console.error("Load Failed:", err);
-
-        loadFallbackSlides();
+        console.error(err);
 
     }
 
 }
 
 //////////////////////////////////////////////////////
-// FALLBACK SLIDES
-//////////////////////////////////////////////////////
-
-function loadFallbackSlides() {
-
-    const fallbackSlides = [
-
-        "https://picsum.photos/1400/900?1",
-        "https://picsum.photos/1400/900?2",
-        "https://picsum.photos/1400/900?3"
-
-    ];
-
-    const container = document.getElementById("slideContainer");
-
-    container.innerHTML = "";
-
-    fallbackSlides.forEach((url, index) => {
-
-        const slide = document.createElement("div");
-
-        slide.className =
-            index === 0
-            ? "slide-wrapper active"
-            : "slide-wrapper";
-
-        slide.innerHTML = `
-            <img src="${url}">
-        `;
-
-        container.appendChild(slide);
-
-    });
-
-    startSlideshowTimer();
-
-}
-
-//////////////////////////////////////////////////////
-// ROTATE SLIDES
+// SLIDESHOW
 //////////////////////////////////////////////////////
 
 function startSlideshowTimer() {
 
     clearInterval(slideInterval);
 
-    slideInterval = setInterval(rotateSlidesDOM, 6000);
+    slideInterval = setInterval(rotateSlidesDOM, 10000);
 
 }
 
 function rotateSlidesDOM() {
 
-    const wrappers = document.querySelectorAll(".slide-wrapper");
+    let wrappers =
+        document.querySelectorAll(".slide-wrapper");
 
-    if (wrappers.length === 0) return;
+    if(wrappers.length === 0) return;
 
     wrappers[slideIndex].classList.remove("active");
 
-    slideIndex = (slideIndex + 1) % wrappers.length;
+    slideIndex =
+        (slideIndex + 1) % wrappers.length;
 
     wrappers[slideIndex].classList.add("active");
 
@@ -353,9 +449,14 @@ function startApp() {
 
     clearInterval(slideInterval);
 
-    document.getElementById("p0").classList.add("hidden");
+    document.getElementById("p0")
+        .classList.add("hidden");
 
-    document.getElementById("p1").classList.remove("hidden");
+    document.getElementById("p1")
+        .classList.remove("hidden");
+
+    document.getElementById("p1-header-link")
+        .classList.remove("hidden");
 
     resetIdleTimer();
 
@@ -371,7 +472,8 @@ function resetIdleTimer() {
 
     clearTimeout(idleTimer);
 
-    idleTimer = setTimeout(exitToSlideshow, 120000);
+    idleTimer =
+        setTimeout(exitToSlideshow, 120000);
 
 }
 
@@ -381,11 +483,157 @@ function exitToSlideshow() {
 
     clearTimeout(idleTimer);
 
-    document.getElementById("p1").classList.add("hidden");
+    document.getElementById("p1")
+        .classList.add("hidden");
 
-    document.getElementById("p0").classList.remove("hidden");
+    document.getElementById("p2")
+        .classList.add("hidden");
+
+    document.getElementById("p0")
+        .classList.remove("hidden");
 
     startSlideshowTimer();
+
+}
+
+//////////////////////////////////////////////////////
+// HEARING FUNCTIONS
+//////////////////////////////////////////////////////
+
+async function init() {
+
+    if (!ctx)
+        ctx =
+            new (
+                window.AudioContext ||
+                window.webkitAudioContext
+            )();
+
+    await ctx.resume();
+
+    document.getElementById("p1")
+        .classList.add("hidden");
+
+    document.getElementById("p2")
+        .classList.remove("hidden");
+
+    setup();
+
+}
+
+function setup() {
+
+    if (osc) {
+
+        try { osc.stop(); } catch(e){}
+
+        osc.disconnect();
+
+    }
+
+    osc = ctx.createOscillator();
+
+    gain = ctx.createGain();
+
+    if (ctx.createStereoPanner) {
+
+        pan = ctx.createStereoPanner();
+
+        pan.pan.value =
+            (ear === "Left" ? -1 : 1);
+
+        osc.connect(gain)
+            .connect(pan)
+            .connect(ctx.destination);
+
+    } else {
+
+        osc.connect(gain)
+            .connect(ctx.destination);
+
+    }
+
+    osc.frequency.value = freqs[idx];
+
+    gain.gain.value = 0;
+
+    osc.start();
+
+    document.getElementById("tag")
+        .innerText =
+            ear.toUpperCase() + " EAR";
+
+    document.getElementById("freq")
+        .innerText =
+            freqs[idx] + " Hz";
+
+}
+
+function changeVol(v) {
+
+    document.getElementById("label")
+        .innerText =
+            "Level: " + v + " dB";
+
+    let f = freqs[idx];
+
+    let calibratedValue =
+        parseFloat(v) + (offsets[f] || 0);
+
+    let g =
+        Math.pow(
+            10,
+            (calibratedValue - 70) / 20
+        );
+
+    if (gain)
+        gain.gain.setTargetAtTime(
+            g,
+            ctx.currentTime,
+            0.05
+        );
+
+}
+
+function step() {
+
+    res[ear].push(
+        parseInt(
+            document.getElementById("slide").value
+        )
+    );
+
+    document.getElementById("slide").value = -15;
+
+    idx++;
+
+    if (idx >= freqs.length) {
+
+        if (ear === "Left") {
+
+            ear = "Right";
+
+            idx = 0;
+
+            setup();
+
+        } else {
+
+            alert("Test Finished");
+
+        }
+
+    } else {
+
+        setup();
+
+    }
+
+}
+
+function showCal() {
+
+    alert("Calibration");
 
 }
 
@@ -393,9 +641,11 @@ function exitToSlideshow() {
 // INIT
 //////////////////////////////////////////////////////
 
-window.onload = async function () {
+window.onload = async function() {
 
-    await loadSlides();
+    await loadRemoteSlides();
+
+    startSlideshowTimer();
 
 };
 
