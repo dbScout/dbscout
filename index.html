@@ -1,14 +1,9 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dB Scout - Calibration Edition</title>
-
-    <!-- SUPABASE -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
         body { 
             font-family: sans-serif; 
@@ -22,7 +17,6 @@
             box-sizing: border-box; 
             overflow: hidden; 
         }
-
         #app { 
             background: white; 
             padding: 40px; 
@@ -37,275 +31,159 @@
             box-sizing: border-box; 
             position: relative; 
         }
+        #p0 { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1000; cursor: pointer; outline: none; }
+        .slide-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; }
+        .slide-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background: #000;
+    overflow: hidden;
+}
 
-        #p0 { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100vw; 
-            height: 100vh; 
-            background: #000; 
-            z-index: 1000; 
-            cursor: pointer; 
-            outline: none; 
-        }
+.slide-wrapper.active {
+    display: block;
+    animation: fadeIn 0.8s ease-in-out;
+}
 
-        .slide-container { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            overflow: hidden; 
-        }
-
-        .slide-wrapper { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            display: none; 
-            background-color: #000;
-            overflow: hidden;
-        }
-
-        .slide-wrapper.active { 
-            display: block; 
-            animation: fadeIn 0.8s ease-in-out; 
-        }
-
-        .slide-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        @keyframes fadeIn { 
-            from { opacity: 0.3; } 
-            to { opacity: 1; } 
-        }
-
-        .slideshow-ui { 
-            position: absolute; 
-            bottom: 60px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            text-align: center; 
-            width: 90%; 
-            max-width: 600px; 
-            background: rgba(255, 255, 255, 0.9); 
-            padding: 20px 30px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3); 
-            pointer-events: none; 
-            z-index: 5; 
-        }
-
-        .slideshow-title { 
-            color: #50bda1; 
-            margin: 0 0 10px 0; 
-            font-size: 2.2rem; 
-        }
-
-        .prompt-text { 
-            margin: 0; 
-            font-size: 1.4rem; 
-            color: #ff7e67; 
-            font-weight: bold; 
-            animation: pulseText 1.8s infinite; 
-        }
-
-        @keyframes pulseText { 
-            0% { opacity: 0.6; } 
-            50% { opacity: 1; } 
-            100% { opacity: 0.6; } 
-        }
-
-        h1 { font-size: 2.5rem; }
-        p { font-size: 1.2rem; line-height: 1.6; }
-
-        .btn { 
-            background: #ff7e67; 
-            color: white; 
-            border: none; 
-            padding: 24px; 
-            border-radius: 50px; 
-            font-size: 1.5rem; 
-            cursor: pointer; 
-            width: 100%; 
-            font-weight: bold; 
-            margin-top: 25px; 
-            transition: 0.2s; 
-        }
-
-        .btn:active { 
-            background: #e66b55; 
-            transform: scale(0.98); 
-        }
-
-        .slider-box { 
-            margin: 35px 0; 
-            padding: 35px 30px; 
-            background: #f9f9f9; 
-            border-radius: 24px; 
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.03); 
-        }
-
-        .slider-box input[type="range"] { 
-            -webkit-appearance: none; 
-            appearance: none; 
-            width: 100%; 
-            height: 24px; 
-            background: #e0f2f1; 
-            border-radius: 12px; 
-            outline: none; 
-            margin: 25px 0; 
-            cursor: pointer; 
-        }
-
-        .slider-box input[type="range"]::-webkit-slider-thumb { 
-            -webkit-appearance: none; 
-            appearance: none; 
-            width: 44px; 
-            height: 44px; 
-            border-radius: 50%; 
-            background: #ff7e67; 
-            cursor: pointer; 
-        }
-
-        .hidden { 
-            display: none; 
-        }
-
-        canvas { 
-            background: white; 
-            border: 1px solid #ddd; 
-            margin-top: 20px; 
-            width: 100%; 
-            height: 280px; 
-            border-radius: 15px; 
-            display: block; 
-        }
-
-        .corner-link { 
-            position: absolute; 
-            top: 25px; 
-            right: 30px; 
-            color: #777; 
-            cursor: pointer; 
-            text-decoration: none; 
-            font-size: 0.9rem; 
-            font-weight: bold; 
-            background: #f0f0f0; 
-            padding: 8px 14px; 
-            border-radius: 20px; 
-            border: 1px solid #ddd; 
-            transition: 0.2s; 
-            z-index: 1010; 
-        }
-
-        @media (min-width: 768px) { 
-            #app { padding: 60px; } 
-        }
+.slide-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+        @keyframes fadeIn { from { opacity: 0.3; } to { opacity: 1; } }
+        .slideshow-ui { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); text-align: center; width: 90%; max-width: 600px; background: rgba(255, 255, 255, 0.9); padding: 20px 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); pointer-events: none; z-index: 5; }
+        .slideshow-title { color: #50bda1; margin: 0 0 10px 0; font-size: 2.2rem; }
+        .prompt-text { margin: 0; font-size: 1.4rem; color: #ff7e67; font-weight: bold; animation: pulseText 1.8s infinite; }
+        @keyframes pulseText { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+        h1 { font-size: 2.5rem; } p { font-size: 1.2rem; line-height: 1.6; }
+        .btn { background: #ff7e67; color: white; border: none; padding: 24px; border-radius: 50px; font-size: 1.5rem; cursor: pointer; width: 100%; font-weight: bold; margin-top: 25px; transition: 0.2s; }
+        .btn:active { background: #e66b55; transform: scale(0.98); }
+        .slider-box { margin: 35px 0; padding: 35px 30px; background: #f9f9f9; border-radius: 24px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.03); }
+        .slider-box input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 24px; background: #e0f2f1; border-radius: 12px; outline: none; margin: 25px 0; cursor: pointer; }
+        .slider-box input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 44px; height: 44px; border-radius: 50%; background: #ff7e67; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.1s; }
+        .slider-box input[type="range"]::-webkit-slider-thumb:active { transform: scale(1.15); background: #e66b55; }
+        .slider-box input[type="range"]::-moz-range-thumb { width: 44px; height: 44px; border: none; border-radius: 50%; background: #ff7e67; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.1s; }
+        .slider-box input[type="range"]::-moz-range-thumb:active { transform: scale(1.15); background: #e66b55; }
+        .cal-item { display: flex; justify-content: space-between; align-items: center; margin: 15px 0; border-bottom: 1px solid #eee; padding: 15px 0; font-size: 1.3rem; }
+        .cal-item button:not(.play-btn) { padding: 12px 20px; font-weight: bold; font-size: 1.1rem; margin: 0 6px; border-radius: 8px; border: 1px solid #ccc; cursor: pointer; background: white; }
+        .cal-val { font-weight: bold; width: 60px; display: inline-block; }
+        .hidden { display: none; }
+        canvas { background: white; border: 1px solid #ddd; margin-top: 20px; width: 100%; height: 280px; border-radius: 15px; display: block; }
+        .corner-link { position: absolute; top: 25px; right: 30px; color: #777; cursor: pointer; text-decoration: none; font-size: 0.9rem; font-weight: bold; background: #f0f0f0; padding: 8px 14px; border-radius: 20px; border: 1px solid #ddd; transition: 0.2s; z-index: 1010; }
+        .corner-link:hover { background: #e5e5e5; color: #333; }
+        .play-btn { background: #50bda1 !important; color: white !important; border: none; border-radius: 8px; padding: 12px 24px; cursor: pointer; font-weight: bold; font-size: 1rem; min-width: 90px; }
+        .play-btn.active { background: #ff7e67 !important; color: white !important; }
+        .advisory-box { background: #f0f9f6; border: 2px solid #50bda1; border-radius: 20px; padding: 25px; margin-top: 25px; text-align: left; font-size: 1.15rem; color: #333; line-height: 1.6; box-sizing: border-box; }
+        .advisory-box h4 { margin-top: 0; margin-bottom: 12px; color: #3f9982; font-size: 1.3rem; }
+        .advisory-box ul { margin: 0; padding-left: 20px; }
+        .advisory-box li { margin-bottom: 12px; }
+        .asymmetry-alert { background: #fff0f0; border: 2px solid #ff7e67; border-radius: 20px; padding: 25px; margin-top: 25px; text-align: left; font-size: 1.15rem; color: #333; line-height: 1.6; box-sizing: border-box; }
+        .asymmetry-alert h4 { margin-top: 0; margin-bottom: 10px; color: #d32f2f; font-size: 1.3rem; }
+        @media (min-width: 768px) { #app { padding: 60px; } .cal-item { padding: 25px 15px; } }
     </style>
 </head>
-
 <body onmousemove="resetIdleTimer()" onclick="resetIdleTimer()" ontouchstart="resetIdleTimer()">
 
 <div id="app">
-
     <span id="p1-header-link" class="corner-link hidden" onclick="showCal()">🔒 Pro Calibration</span>
 
-    <!-- PAGE 0 -->
+    <!-- Page 0: Full Screen Slideshow (Using color cards to bypass network blocks) -->
     <div id="p0" onclick="startApp()">
-
-        <div id="slideContainer" class="slide-container">
-
-            <!-- FALLBACK SLIDES -->
-            <div class="slide-wrapper active">
-                <img src="https://picsum.photos/1400/900?1">
-            </div>
-
-            <div class="slide-wrapper">
-                <img src="https://picsum.photos/1400/900?2">
-            </div>
-
-            <div class="slide-wrapper">
-                <img src="https://picsum.photos/1400/900?3">
-            </div>
-
+    <div id="slideContainer" class="slide-container">
+    <!-- Slides loaded dynamically from Supabase -->
+</div>
         </div>
-
         <div class="slideshow-ui">
             <h1 class="slideshow-title">🌈 dB Scout Experience</h1>
             <p class="prompt-text">👉 TAP ANYWHERE TO START ASSESSMENT</p>
         </div>
-
     </div>
 
-    <!-- PAGE 1 -->
+    <!-- Page 1: Welcome Workspace -->
     <div id="p1" class="hidden">
-
-        <h1 style="color:#50bda1; margin-bottom: 5px; margin-top: 15px;">
-            🌈 dB Scout
-        </h1>
-
-        <p style="margin-top: 0; color: #666;">
-            Windows Chrome Tablet Edition
-        </p>
-
-        <button id="startBtn" class="btn" onclick="init()">
-            UNLOCK AUDIO & BEGIN
-        </button>
-
+        <h1 style="color:#50bda1; margin-bottom: 5px; margin-top: 15px;">🌈 dB Scout</h1>
+        <p style="margin-top: 0; color: #666;">Windows Chrome Tablet Edition</p>
+        <div style="background: #fff0f0; border: 2px solid #ff7e67; border-radius: 20px; padding: 25px; margin: 30px 0; text-align: left; font-size: 1.1rem; color: #333; line-height: 1.6;">
+            <h3 style="color: #d32f2f; margin-top: 0; font-size: 1.3rem;">⚠️ Medical Red Flags</h3>
+            <p style="font-weight: bold; margin-bottom: 10px;">Consult a doctor immediately if you have:</p>
+            <ul style="padding-left: 25px; margin: 0;">
+                <li>Sudden, rapidly progressive, or fluctuating hearing loss</li>
+                <li>Active drainage, bleeding, or pain in the ear</li>
+                <li>Visible foreign objects or significant wax buildup</li>
+                <li>Tinnitus, dizziness, or facial nerve paralysis</li>
+                <li>Other specific concern regarding your hearing</li>
+            </ul>
+        </div>
+        <button id="startBtn" class="btn" onclick="init()">UNLOCK AUDIO & BEGIN</button>
     </div>
 
-    <!-- PAGE 2 -->
+    <!-- Page 2: Diagnostic Matrix -->
     <div id="p2" class="hidden">
-
-        <div id="tag" style="font-weight:bold; font-size: 1.6rem;">
-            LEFT EAR
-        </div>
-
-        <h2 id="freq" style="color:#ff7e67; font-size: 4rem; margin: 20px 0;">
-            500 Hz
-        </h2>
-
+        <div id="tag" style="font-weight:bold; font-size: 1.6rem;">LEFT EAR</div>
+        <h2 id="freq" style="color:#ff7e67; font-size: 4rem; margin: 20px 0;">500 Hz</h2>
         <div class="slider-box">
-
-            <input
-                type="range"
-                id="slide"
-                min="-15"
-                max="70"
-                step="5"
-                value="-15"
-                oninput="changeVol(this.value)"
-            >
-
-            <p id="label" style="font-size: 2.2rem; margin: 15px 0; font-weight: bold; color: #333;">
-                Level: -15 dB
-            </p>
-
+            <input type="range" id="slide" min="-15" max="70" step="5" value="-15" oninput="changeVol(this.value)">
+            <p id="label" style="font-size: 2.2rem; margin: 15px 0; font-weight: bold; color: #333;">Level: -15 dB</p>
         </div>
-
-        <button class="btn" style="background:#50bda1" onclick="step()">
-            SAVE & NEXT
-        </button>
-
+        <button class="btn" style="background:#50bda1" onclick="step()">SAVE & NEXT</button>
     </div>
 
+    <!-- Page Cal: Calibration View -->
+    <div id="p-cal" class="hidden">
+        <h2 style="color:#50bda1; font-size: 2.2rem; margin-top: 20px;">Calibration (70dB HL)</h2>
+        <div id="cal-list"></div>
+        <button class="btn" style="background:#333" onclick="location.reload()">SAVE & EXIT</button>
+    </div>
+
+    <!-- Page 3: Profile Results Output -->
+    <div id="p3" class="hidden">
+        <h1 style="color:#50bda1; font-size: 2.5rem; margin-top: 20px;">Your Results 🌟</h1>
+        <canvas id="c"></canvas>
+        <div id="gapAlert" class="asymmetry-alert hidden">
+            <h4>⚠️ Attention: Asymmetric Profile Detected</h4>
+            <p style="margin: 0;">There is a huge difference between your left and right ears. We highly recommend scheduling an appointment to see a medical professional for an in-depth evaluation.</p>
+        </div>
+        <div class="advisory-box">
+            <h4>ℹ️ Recommendations & Next Steps</h4>
+            <p style="margin: 0 0 10px 0;">If your profile shows hearing difficulties, please consider the following options:</p>
+            <ul>
+                <li>See our associates for affordable hearing enhancements, which cost around <strong>CAD 300–400</strong>.</li>
+                <li>Seek professional hearing aids near you (around <strong>CAD 2000–3500 per device</strong>). You can consult our team directly at <strong>PH: 1-800-000-0000</strong>.</li>
+            </ul>
+        </div>
+        <button class="btn" onclick="exitToSlideshow()">RETURN TO HOME SCREEN</button>
+    </div>
 </div>
 
-<script>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    // Filter-proof list assembly to beat background system trunctation
+    let freqs = new Array();
+    freqs.push(Number("500"));
+    freqs.push(Number("1000"));
+    freqs.push(Number("2000"));
+    freqs.push(Number("4000"));
+    
+    let res = { Left: new Array(), Right: new Array() };
+    let ear = "Left";
+    let idx = 0;
+    let ctx = null, osc = null, gain = null, pan = null;
+    let offsets = { 500: 0, 1000: 0, 2000: 0, 4000: 0 };
+    
+    let savedOffsets = localStorage.getItem("hearing_cal");
+    if (savedOffsets) {
+        try { offsets = JSON.parse(savedOffsets); } catch(e) {}
+    }
+    
+    let slideIndex = 0, slideInterval = null, idleTimer = null, appActive = false;
 //////////////////////////////////////////////////////
 // SUPABASE CONFIG
 //////////////////////////////////////////////////////
 
-const SUPABASE_URL =
-"https://otffjqbukzlsbptelyjh.supabase.co";
+const SUPABASE_URL = "https://otffjqbukzlsbptelyjh.supabase.co";
 
 const SUPABASE_ANON_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90ZmZqcWJ1a3psc2JwdGVseWpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODA1MzMsImV4cCI6MjA5NDY1NjUzM30.NzHVg4UI50Q-cIb5jdsiv209fmK7ExvEeO-zvo8BzZE";
@@ -314,40 +192,15 @@ const supabaseClient = supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
 );
+    window.onload = async function() {
 
-//////////////////////////////////////////////////////
-// ORIGINAL VARIABLES
-//////////////////////////////////////////////////////
+    await loadRemoteSlides();
 
-let freqs = [500,1000,2000,4000];
+    startSlideshowTimer();
 
-let res = {
-    Left: [],
-    Right: []
 };
-
-let ear = "Left";
-let idx = 0;
-
-let ctx = null;
-let osc = null;
-let gain = null;
-let pan = null;
-
-let offsets = {
-    500:0,
-    1000:0,
-    2000:0,
-    4000:0
-};
-
-let slideIndex = 0;
-let slideInterval = null;
-let idleTimer = null;
-let appActive = false;
-
-//////////////////////////////////////////////////////
-// LOAD REMOTE SLIDES
+    //////////////////////////////////////////////////////
+// LOAD SLIDES FROM SUPABASE
 //////////////////////////////////////////////////////
 
 async function loadRemoteSlides() {
@@ -360,38 +213,27 @@ async function loadRemoteSlides() {
             .eq('kiosk_id', 'kiosk_01')
             .single();
 
-        if(error) {
-
+        if (error) {
             console.error(error);
-
             return;
         }
 
-        if(
-            !data ||
-            !data.image_urls ||
-            data.image_urls.length === 0
-        ) {
-
-            console.log("No slides found");
-
+        if (!data || !data.image_urls || data.image_urls.length === 0) {
+            console.log('No slideshow images found');
             return;
         }
 
-        const container =
-            document.getElementById("slideContainer");
+        const container = document.getElementById('slideContainer');
 
-        container.innerHTML = "";
+        container.innerHTML = '';
 
-        data.image_urls.forEach((url,index)=>{
+        data.image_urls.forEach((url, index) => {
 
-            const slide =
-                document.createElement("div");
+            const slide = document.createElement('div');
 
-            slide.className =
-                index === 0
-                ? "slide-wrapper active"
-                : "slide-wrapper";
+            slide.className = index === 0
+                ? 'slide-wrapper active'
+                : 'slide-wrapper';
 
             slide.innerHTML = `
                 <img src="${url}">
@@ -401,256 +243,186 @@ async function loadRemoteSlides() {
 
         });
 
-        console.log("Slides loaded");
+        console.log('Slides loaded from Supabase');
 
     } catch(err) {
 
-        console.error(err);
+        console.error('Slide load failed:', err);
 
     }
 
 }
 
-//////////////////////////////////////////////////////
-// SLIDESHOW
-//////////////////////////////////////////////////////
-
-function startSlideshowTimer() {
-
-    clearInterval(slideInterval);
-
-    slideInterval = setInterval(rotateSlidesDOM, 10000);
-
-}
-
-function rotateSlidesDOM() {
-
-    let wrappers =
-        document.querySelectorAll(".slide-wrapper");
-
-    if(wrappers.length === 0) return;
-
-    wrappers[slideIndex].classList.remove("active");
-
-    slideIndex =
-        (slideIndex + 1) % wrappers.length;
-
-    wrappers[slideIndex].classList.add("active");
-
-}
-
-//////////////////////////////////////////////////////
-// START APP
-//////////////////////////////////////////////////////
-
-function startApp() {
-
-    appActive = true;
-
-    clearInterval(slideInterval);
-
-    document.getElementById("p0")
-        .classList.add("hidden");
-
-    document.getElementById("p1")
-        .classList.remove("hidden");
-
-    document.getElementById("p1-header-link")
-        .classList.remove("hidden");
-
-    resetIdleTimer();
-
-}
-
-//////////////////////////////////////////////////////
-// IDLE TIMER
-//////////////////////////////////////////////////////
-
-function resetIdleTimer() {
-
-    if (!appActive) return;
-
-    clearTimeout(idleTimer);
-
-    idleTimer =
-        setTimeout(exitToSlideshow, 120000);
-
-}
-
-function exitToSlideshow() {
-
-    appActive = false;
-
-    clearTimeout(idleTimer);
-
-    document.getElementById("p1")
-        .classList.add("hidden");
-
-    document.getElementById("p2")
-        .classList.add("hidden");
-
-    document.getElementById("p0")
-        .classList.remove("hidden");
-
-    startSlideshowTimer();
-
-}
-
-//////////////////////////////////////////////////////
-// HEARING FUNCTIONS
-//////////////////////////////////////////////////////
-
-async function init() {
-
-    if (!ctx)
-        ctx =
-            new (
-                window.AudioContext ||
-                window.webkitAudioContext
-            )();
-
-    await ctx.resume();
-
-    document.getElementById("p1")
-        .classList.add("hidden");
-
-    document.getElementById("p2")
-        .classList.remove("hidden");
-
-    setup();
-
-}
-
-function setup() {
-
-    if (osc) {
-
-        try { osc.stop(); } catch(e){}
-
-        osc.disconnect();
-
+    function startSlideshowTimer() {
+        clearInterval(slideInterval);
+        slideInterval = setInterval(rotateSlidesDOM, 10000); 
     }
 
-    osc = ctx.createOscillator();
-
-    gain = ctx.createGain();
-
-    if (ctx.createStereoPanner) {
-
-        pan = ctx.createStereoPanner();
-
-        pan.pan.value =
-            (ear === "Left" ? -1 : 1);
-
-        osc.connect(gain)
-            .connect(pan)
-            .connect(ctx.destination);
-
-    } else {
-
-        osc.connect(gain)
-            .connect(ctx.destination);
-
+    function rotateSlidesDOM() {
+        let wrappers = document.querySelectorAll(".slide-wrapper");
+        if(wrappers.length === 0) return;
+        wrappers[slideIndex].classList.remove("active");
+        slideIndex = (slideIndex + 1) % wrappers.length;
+        wrappers[slideIndex].classList.add("active");
     }
 
-    osc.frequency.value = freqs[idx];
+    function startApp() {
+        appActive = true;
+        clearInterval(slideInterval);
+        document.getElementById("p0").classList.add("hidden");
+        document.getElementById("p1").classList.remove("hidden");
+        document.getElementById("p1-header-link").classList.remove("hidden");
+        resetIdleTimer();
+    }
 
-    gain.gain.value = 0;
+    function resetIdleTimer() {
+        if (!appActive) return;
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(exitToSlideshow, 120000);
+    }
 
-    osc.start();
+    function exitToSlideshow() {
+        appActive = false; clearTimeout(idleTimer);
+        if (osc) { try { osc.stop(); } catch(e){} osc.disconnect(); osc = null; }
+        ear = "Left"; idx = 0; 
+        res.Left = new Array();
+        res.Right = new Array();
+        
+        let appBox = document.getElementById("app");
+        if (appBox) appBox.scrollTop = 0; 
+        
+        document.getElementById("gapAlert").classList.add("hidden");
+        document.getElementById("p1-header-link").classList.add("hidden");
+        document.getElementById("p1").classList.add("hidden");
+        document.getElementById("p2").classList.add("hidden");
+        document.getElementById("p-cal").classList.add("hidden");
+        document.getElementById("p3").classList.add("hidden");
+        document.getElementById("p0").classList.remove("hidden");
+        
+        startSlideshowTimer();
+    }
 
-    document.getElementById("tag")
-        .innerText =
-            ear.toUpperCase() + " EAR";
+    function saveOffsets() { localStorage.setItem("hearing_cal", JSON.stringify(offsets)); }
 
-    document.getElementById("freq")
-        .innerText =
-            freqs[idx] + " Hz";
-
-}
-
-function changeVol(v) {
-
-    document.getElementById("label")
-        .innerText =
-            "Level: " + v + " dB";
-
-    let f = freqs[idx];
-
-    let calibratedValue =
-        parseFloat(v) + (offsets[f] || 0);
-
-    let g =
-        Math.pow(
-            10,
-            (calibratedValue - 70) / 20
-        );
-
-    if (gain)
-        gain.gain.setTargetAtTime(
-            g,
-            ctx.currentTime,
-            0.05
-        );
-
-}
-
-function step() {
-
-    res[ear].push(
-        parseInt(
-            document.getElementById("slide").value
-        )
-    );
-
-    document.getElementById("slide").value = -15;
-
-    idx++;
-
-    if (idx >= freqs.length) {
-
-        if (ear === "Left") {
-
-            ear = "Right";
-
-            idx = 0;
-
-            setup();
-
-        } else {
-
-            alert("Test Finished");
-
-        }
-
-    } else {
-
+    async function init() {
+        document.getElementById("p1-header-link").classList.add("hidden");
+        if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+        await ctx.resume();
+        document.getElementById("p1").classList.add("hidden");
+        document.getElementById("p2").classList.remove("hidden");
         setup();
-
     }
 
-}
+    function setup() {
+        if (osc) { try { osc.stop(); } catch(e){} osc.disconnect(); }
+        osc = ctx.createOscillator(); gain = ctx.createGain();
+        if (ctx.createStereoPanner) {
+            pan = ctx.createStereoPanner(); pan.pan.value = (ear === "Left" ? -1 : 1);
+            osc.connect(gain).connect(pan).connect(ctx.destination);
+        } else { osc.connect(gain).connect(ctx.destination); }
+        osc.frequency.value = freqs[idx]; gain.gain.value = 0; osc.start();
+        document.getElementById("tag").innerText = ear.toUpperCase() + " EAR";
+        document.getElementById("tag").style.color = (ear === "Left" ? "#0056b3" : "#b30000");
+        document.getElementById("freq").innerText = freqs[idx] + " Hz";
+    }
 
-function showCal() {
+    function changeVol(v) {
+        document.getElementById("label").innerText = "Level: " + v + " dB";
+        let f = freqs[idx];
+        let calibratedValue = parseFloat(v) + (offsets[f] || 0);
+        let g = Math.pow(10, (calibratedValue - 70) / 20); 
+        if (gain) gain.gain.setTargetAtTime(g, ctx.currentTime, 0.05);
+    }
 
-    alert("Calibration");
+    function showCal() {
+        document.getElementById("p1-header-link").classList.add("hidden");
+        document.getElementById("p1").classList.add("hidden");
+        document.getElementById("p-cal").classList.remove('hidden');
+        const list = document.getElementById("cal-list");
+        const targets = { 500: 83.5, 1000: 77.5, 2000: 79.0, 4000: 79.5 };
+        list.innerHTML = `<p style="color:#666; font-size:1.1rem; margin-bottom:25px;">Set meter to dB(C) Slow. Aim for Target SPL.</p>`;
+        freqs.forEach(f => {
+            list.innerHTML += `<div class="cal-item"><div style="text-align:left"><span style="font-weight:bold; width:75px; display:inline-block;">${f}Hz</span><span style="font-size:1rem; color:#50bda1;">Target: ${targets[f]}</span></div><div><button onclick="adjCal(${f},-1)">-</button><span class="cal-val" id="val-${f}">${offsets[f]}</span><button onclick="adjCal(${f},1)">+</button><button id="btn-${f}" class="play-btn" onclick="testTone(${f})">PLAY</button></div></div>`;
+        });
+    }
 
-}
+    function adjCal(f, amt) { offsets[f] += amt; document.getElementById(`val-${f}`).innerText = offsets[f]; saveOffsets(); }
 
-//////////////////////////////////////////////////////
-// INIT
-//////////////////////////////////////////////////////
+    async function testTone(f) {
+        if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+        await ctx.resume();
+        const btn = document.getElementById(`btn-${f}`);
+        if(btn.classList.contains("active")) {
+            if (osc) { try { osc.stop(); } catch(e){} osc.disconnect(); }
+            btn.classList.remove("active"); btn.innerText = "PLAY";
+        } else {
+            document.querySelectorAll(".play-btn").forEach(b => { b.classList.remove("active"); b.innerText = "PLAY"; });
+            if (osc) { try { osc.stop(); } catch(e){} osc.disconnect(); }
+            btn.classList.add("active"); btn.innerText = "STOP";
+            osc = ctx.createOscillator(); gain = ctx.createGain(); osc.frequency.value = f;
+            let calibratedLevel = 70 + (offsets[f] || 0);
+            let g = Math.pow(10, (calibratedLevel - 70) / 20); gain.gain.value = g;
+            osc.connect(gain).connect(ctx.destination); osc.start();
+            setTimeout(() => { if(btn.classList.contains("active")) { try { osc.stop(); } catch(e){} btn.classList.remove("active"); btn.innerText = "PLAY"; } }, 3000);
+        }
+    }
 
-window.onload = async function() {
+    function step() {
+        res[ear].push(parseInt(document.getElementById("slide").value));
+        document.getElementById("slide").value = -15; document.getElementById("label").innerText = "Level: -15 dB";
+        idx++;
+        if (idx >= freqs.length) {
+            if (ear === "Left") { ear = "Right"; idx = 0; setup(); } 
+            else { finish(); }
+        } else { setup(); }
+    }
 
-    await loadRemoteSlides();
+    function finish() {
+        if (osc) try { osc.stop(); } catch(e){}
+        document.getElementById("p2").classList.add("hidden");
+        document.getElementById("p3").classList.remove("hidden");
+        let hasHugeGap = false;
+        for (let i = 0; i < freqs.length; i++) {
+            if (Math.abs(res.Left[i] - res.Right[i]) > 30) hasHugeGap = true;
+        }
+        if (hasHugeGap) document.getElementById("gapAlert").classList.remove("hidden");
+        draw();
+    }
 
-    startSlideshowTimer();
-
-};
-
+    function draw() {
+        let cvs = document.getElementById("c"), g = cvs.getContext("2d");
+        const rect = cvs.getBoundingClientRect();
+        cvs.width = rect.width; cvs.height = 280; 
+        const W = cvs.width, H = cvs.height, PAD_LEFT = 95, PAD_RIGHT = 45;
+        g.clearRect(0,0,W,H);
+        const zones = [{limit: 0, color: '#e8f5e9', label: 'Excellent'}, {limit: 15, color: '#fff9c4', label: 'Fair'}, {limit: 60, color: '#ffe0b2', label: 'Difficulties'}, {limit: 80, color: '#ffcdd2', label: 'Seek Help'}];
+        let lastY = 20;
+        zones.forEach(z => {
+            let y = 20 + ((z.limit + 20) * 2.0); 
+            g.fillStyle = z.color; g.fillRect(PAD_LEFT, lastY, W - (PAD_LEFT + PAD_RIGHT), y - lastY);
+            g.fillStyle = '#444'; g.font = 'bold 13px sans-serif'; g.fillText(z.label, PAD_LEFT + 15, lastY + 16);
+            lastY = y;
+        });
+        g.strokeStyle = '#bbb';
+        let colWidth = (W - (PAD_LEFT + PAD_RIGHT)) / 3;
+        for(let i=0; i<4; i++) {
+            let x = PAD_LEFT + i * colWidth;
+            g.beginPath(); g.moveTo(x, 20); g.lineTo(x, 220); g.stroke();
+            g.fillStyle = '#333'; g.font = 'bold 14px sans-serif'; g.fillText(freqs[i] + "Hz", x - 20, 245);
+        }
+        const plot = (data, color, sym, textLabel) => {
+            g.strokeStyle = color; g.fillStyle = color; g.lineWidth = 3; g.beginPath();
+            let startX = 0, startY = 0;
+            data.forEach((v, i) => {
+                let x = PAD_LEFT + i * colWidth, y = 20 + ((v + 20) * 2.0);
+                if(i === 0) { g.moveTo(x, y); startX = x; startY = y; } else { g.lineTo(x, y); }
+                g.font = "bold 22px Arial"; g.fillText(sym, x - 8, y + 8);
+            });
+            g.stroke();
+            g.font = 'bold 15px sans-serif'; g.textAlign = 'right'; g.fillText(textLabel + ' ➔', startX - 18, startY + 5); g.textAlign = 'left';
+        };
+        plot(res.Left, '#0056b3', 'X', 'Left'); plot(res.Right, '#b30000', 'O', 'Right');
+    }
 </script>
-
 </body>
 </html>
-```
