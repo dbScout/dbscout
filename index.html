@@ -33,7 +33,20 @@
         }
         #p0 { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1000; cursor: pointer; outline: none; }
         .slide-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; }
-        .slide-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; background-color: #000; text-align: center; box-sizing: border-box; padding-top: 15vh; }
+        .slide-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background-color: #000;
+}
+        .slide-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
         .slide-wrapper.active { display: block; animation: fadeIn 0.8s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0.3; } to { opacity: 1; } }
         .slideshow-ui { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); text-align: center; width: 90%; max-width: 600px; background: rgba(255, 255, 255, 0.9); padding: 20px 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); pointer-events: none; z-index: 5; }
@@ -72,30 +85,17 @@
 <div id="app">
     <span id="p1-header-link" class="corner-link hidden" onclick="showCal()">🔒 Pro Calibration</span>
 
-    <!-- Page 0: Full Screen Slideshow (Using color cards to bypass network blocks) -->
-    <div id="p0" onclick="startApp()">
-        <div id="slideContainer" class="slide-container">
-            <!-- Slide 1 -->
-            <div class="slide-wrapper active" style="background: #e0f2f1;">
-                <div style="color: #004d40; font-size: 2.5rem; font-weight: bold;">🏥 Welcome to Our Partner Clinic</div>
-                <div style="color: #00796b; font-size: 1.5rem; margin-top: 15px;">Providing Professional Audiology Care Near You</div>
-            </div>
-            <!-- Slide 2 -->
-            <div class="slide-wrapper" style="background: #ffe0b2;">
-                <div style="color: #e65100; font-size: 2.5rem; font-weight: bold;">🎧 State-of-the-Art Testing</div>
-                <div style="color: #f57c00; font-size: 1.5rem; margin-top: 15px;">Quick, Accurate, and Calibrated Pure-Tone Assessments</div>
-            </div>
-            <!-- Slide 3 -->
-            <div class="slide-wrapper" style="background: #f1f8e9;">
-                <div style="color: #1b5e20; font-size: 2.5rem; font-weight: bold;">🌟 Better Hearing Starts Here</div>
-                <div style="color: #388e3c; font-size: 1.5rem; margin-top: 15px;">Centrally Managed Diagnostics for Reliable Enhancements</div>
-            </div>
-        </div>
-        <div class="slideshow-ui">
-            <h1 class="slideshow-title">🌈 dB Scout Experience</h1>
-            <p class="prompt-text">👉 TAP ANYWHERE TO START ASSESSMENT</p>
-        </div>
+    <!-- Page 0: Full Screen Slideshow -->
+<div id="p0" onclick="startApp()">
+    <div id="slideContainer" class="slide-container">
+        <!-- Slides injected dynamically -->
     </div>
+
+    <div class="slideshow-ui">
+        <h1 class="slideshow-title">🌈 dB Scout Experience</h1>
+        <p class="prompt-text">👉 TAP ANYWHERE TO START ASSESSMENT</p>
+    </div>
+</div>
 
     <!-- Page 1: Welcome Workspace -->
     <div id="p1" class="hidden">
@@ -153,7 +153,65 @@
     </div>
 </div>
 
-<script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    const SUPABASE_URL = "https://otffjqbukzlsbptelyjh.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90ZmZqcWJ1a3psc2JwdGVseWpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODA1MzMsImV4cCI6MjA5NDY1NjUzM30.NzHVg4UI50Q-cIb5jdsiv209fmK7ExvEeO-zvo8BzZE";
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+    async function loadSlides() {
+    try {
+
+        const { data, error } = await supabaseClient
+            .from('kiosk_slideshows')
+            .select('*')
+            .eq('kiosk_id', 'kiosk_01')
+            .single();
+
+        if (error) {
+            console.error("Supabase fetch error:", error);
+            return;
+        }
+
+        console.log("Slide data:", data);
+
+        if (!data || !data.image_urls || data.image_urls.length === 0) {
+            console.error("No image URLs found");
+            return;
+        }
+
+        const container = document.getElementById("slideContainer");
+
+        container.innerHTML = "";
+
+        data.image_urls.forEach((url, index) => {
+
+            const slide = document.createElement("div");
+
+            slide.className = index === 0
+                ? "slide-wrapper active"
+                : "slide-wrapper";
+
+            slide.innerHTML = `
+                <img
+                    src="${url}"
+                    style="
+                        width:100%;
+                        height:100%;
+                        object-fit:cover;
+                    "
+                />
+            `;
+
+            container.appendChild(slide);
+        });
+
+    } catch (err) {
+        console.error("Load slides failed:", err);
+    }
+}
+);
     // Filter-proof list assembly to beat background system trunctation
     let freqs = new Array();
     freqs.push(Number("500"));
@@ -174,9 +232,10 @@
     
     let slideIndex = 0, slideInterval = null, idleTimer = null, appActive = false;
 
-    window.onload = function() {
-        startSlideshowTimer();
-    };
+    window.onload = async function() {
+    await loadSlides();
+    startSlideshowTimer();
+};
 
     function startSlideshowTimer() {
         clearInterval(slideInterval);
