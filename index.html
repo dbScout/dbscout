@@ -91,7 +91,6 @@
 <div id="app">
     <span id="p1-header-link" class="corner-link hidden" onclick="showCal()">🔒 Pro Calibration</span>
 
-    <!-- Page 0: Full Screen Slideshow (Using color cards to bypass network blocks) -->
    <!-- Page 0: Full Screen Slideshow -->
 <div id="p0" onclick="startApp()">
 
@@ -105,11 +104,6 @@
     </div>
 
 </div>
-        <div class="slideshow-ui">
-            <h1 class="slideshow-title">🌈 dB Scout Experience</h1>
-            <p class="prompt-text">👉 TAP ANYWHERE TO START ASSESSMENT</p>
-        </div>
-    </div>
 
     <!-- Page 1: Welcome Workspace -->
     <div id="p1" class="hidden">
@@ -168,6 +162,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
     <script>
     // Filter-proof list assembly to beat background system trunctation
     let freqs = new Array();
