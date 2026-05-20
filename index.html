@@ -255,7 +255,7 @@ canvas {
 
 <div class="panel">
 
-<div class="corner-link" onclick="showCal()">
+<div class="corner-link" onclick="()">
 🔒 Pro Calibration
 </div>
 
@@ -584,7 +584,7 @@ function resetCalibration() {
             localStorage.removeItem('dbscout_calibration_' + f);
         });
         console.log('Calibration reset to defaults');
-        showCal(); // Refresh the display
+        (); // Refresh the display
     }
 }
 
@@ -736,8 +736,26 @@ function step() {
 
 }
 
+<script>
+const CAL_PIN = "4321";
+
 function showCal() {
 
+    // Ask for PIN
+    const enteredPin = prompt("Enter 4-digit calibration PIN");
+
+    // Cancel pressed
+    if (enteredPin === null) {
+        return;
+    }
+
+    // Wrong PIN
+    if (enteredPin !== CAL_PIN) {
+        alert("Incorrect PIN");
+        return;
+    }
+
+    // Correct PIN → open calibration page
     document.getElementById('p1').classList.add('hidden');
     document.getElementById('p-cal').classList.remove('hidden');
 
@@ -766,6 +784,7 @@ function showCal() {
         `;
     });
 }
+</script>
 
 function backToMain() {
 
