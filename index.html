@@ -704,64 +704,114 @@ async function testTone(f) {
 }
 
 function draw() {
+            const canvas = document.getElementById('c');
+            const g = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 360; 
+            const W = canvas.width;
+            const H = canvas.height;
+            g.clearRect(0,0,W,H);
 
-    const canvas = document.getElementById('c');
-    const g = canvas.getContext('2d');
+            const START_X = 180; 
+            const END_X = W - 100;
+            const PLOT_WIDTH = END_X - START_X;
 
-    canvas.width = canvas.offsetWidth;
-    canvas.height = 320;
+            // NEW SCALE: Maps dB values proportionally so 35 dB sits exactly at the center (Y = 160)
+            function getSliceY(dbValue) {
+                const startY = 40;       // Top of graph (-15 dB)
+                const centerY = 160;      // Middle of graph (35 dB)
+                const endY = 280;        // Bottom of graph (70 dB)
 
-    const W = canvas.width;
-    const H = canvas.height;
-
-    g.clearRect(0,0,W,H);
-
-    g.strokeStyle = '#ccc';
-
-    for(let i=0;i<4;i++) {
-
-        let x = 100 + i * ((W - 180) / 3);
-
-        g.beginPath();
-        g.moveTo(x, 30);
-        g.lineTo(x, 250);
-        g.stroke();
-
-        g.fillText(freqs[i] + 'Hz', x - 15, 280);
-    }
-
-    function plot(data, color, symbol) {
-
-        g.strokeStyle = color;
-        g.fillStyle = color;
-        g.lineWidth = 3;
-
-        g.beginPath();
-
-        data.forEach((v, i) => {
-
-            let x = 100 + i * ((W - 180) / 3);
-            let y = 40 + ((v + 20) * 2);
-
-            if(i === 0) {
-                g.moveTo(x,y);
-            } else {
-                g.lineTo(x,y);
+                if (dbValue <= 35) {
+                    // Map -15 to 35 into the top half (spanning 120 pixels)
+                    return startY + ((dbValue - (-15)) / (35 - (-15))) * (centerY - startY);
+                } else {
+                    // Map 35 to 70 into the bottom half (spanning 120 pixels)
+                    return centerY + ((dbValue - 35) / (70 - 35)) * (endY - centerY);
+                }
             }
 
-            g.font = '22px Arial';
-            g.fillText(symbol, x - 7, y + 7);
+            // --- DRAW HORIZONTAL CATEGORY TIERS ---
+            const tiers = [
+                { label: "Excellent (-15 to 20 dB)", start: -15, end: 20, color: "rgba(40, 167, 69, 0.08)" },
+                { label: "Fair (20 to 35 dB)", start: 20, end: 35, color: "rgba(255, 193, 7, 0.08)" },
+                { label: "Hearing Difficulties (35 to 60 dB)", start: 35, end: 60, color: "rgba(253, 126, 20, 0.08)" },
+                { label: "Seek Help (Below 60 dB)", start: 60, end: 70, color: "rgba(220, 53, 69, 0.08)" }
+            ];
 
-        });
+            g.font = 'bold 11px Arial';
+            tiers.forEach(tier => {
+                let yStart = getSliceY(tier.start);
+                let yEnd = getSliceY(tier.end);
+                
+                // Draw color block background
+                g.fillStyle = tier.color;
+                g.fillRect(START_X, yStart, PLOT_WIDTH, yEnd - yStart);
 
-        g.stroke();
-    }
+                // Draw bounding tier line
+                g.strokeStyle = '#e0e0e0';
+                g.lineWidth = 1;
+                g.beginPath();
+                g.moveTo(START_X, yEnd);
+                g.lineTo(END_X, yEnd);
+                g.stroke();
 
-    plot(res.Left, '#0056b3', 'X');
-    plot(res.Right, '#b30000', 'O');
-}
+                // Draw category tier text labels on the far left side
+                g.fillStyle = '#555';
+                g.fillText(tier.label, 10, yStart + ((yEnd - yStart) / 2) + 4); // Centered vertically within its tier block
+            });
 
-function exitToSlideshow() {
+            // --- DRAW VERTICAL FREQUENCY GRID LINES ---
+            g.strokeStyle = '#ccc';
+            g.lineWidth = 1;
+            g.fillStyle = '#333';
+            g.font = '12px Arial';
+            for(let i=0; i<4; i++) {
+                let x = START_X + i * (PLOT_WIDTH / 3);
+                g.beginPath();
+                g.moveTo(x, 40);
+                g.lineTo(x, 280);
+                g.stroke();
+                g.fillText(freqs[i] + 'Hz', x - 15, 305);
+            }
+
+            // --- PLOT DATA LINES & SIDE LABELS ---
+            function plot(data, color, symbol, sideLabel, textOffsetSide) {
+                if (!data || data.length === 0) return;
+                g.strokeStyle = color;
+                g.fillStyle = color;
+                g.lineWidth = 3;
+                g.beginPath();
+                
+                data.forEach((v, i) => {
+                    let x = START_X + i * (PLOT_WIDTH / 3);
+                    let y = getSliceY(v);
+                    if(i === 0) { g.moveTo(x,y); } else { g.lineTo(x,y); }
+                });
+                g.stroke();
+
+                // Draw standard 'X' or 'O' markers over vertices
+                data.forEach((v, i) => {
+                    let x = START_X + i * (PLOT_WIDTH / 3);
+                    let y = getSliceY(v);
+                    g.font = '22px Arial';
+                    g.fillText(symbol, x - 7, y + 7);
+                });
+
+                // Attach explicit Left / Rt side labeling directly to the end strings
+                g.font = 'bold 14px Arial';
+                if (textOffsetSide === 'left') {
+                    let firstY = getSliceY(data[0]);
+                    g.fillText(sideLabel, START_X - 50, firstY + 5);
+                } else if (textOffsetSide === 'right') {
+                    let lastY = getSliceY(data[data.length - 1]);
+                    g.fillText(sideLabel, END_X + 15, lastY + 5);
+                }
+            }
+
+            plot(res.Left, '#0056b3', 'X', 'Left', 'left');
+            plot(res.Right, '#b30000', 'O', 'Rt side', 'right');
+        }function exitToSlideshow() {
 
     location.reload();
 }
