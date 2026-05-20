@@ -203,7 +203,6 @@ canvas {
 
 <div id="app">
 
-<!-- PAGE 0 -->
 <div id="p0">
 
     <div id="slideContainer" class="slide-container"></div>
@@ -215,7 +214,6 @@ canvas {
 
 </div>
 
-<!-- PAGE 1 -->
 <div id="p1" class="page hidden">
 
 <div class="panel">
@@ -270,7 +268,6 @@ UNLOCK AUDIO & BEGIN
 </div>
 </div>
 
-<!-- PAGE 2 -->
 <div id="p2" class="page hidden">
 <div class="panel">
 
@@ -307,7 +304,6 @@ SAVE & NEXT
 </div>
 </div>
 
-<!-- CALIBRATION -->
 <div id="p-cal" class="page hidden">
 <div class="panel">
 
@@ -324,7 +320,6 @@ BACK
 </div>
 </div>
 
-<!-- RESULTS -->
 <div id="p3" class="page hidden">
 <div class="panel">
 
@@ -479,7 +474,9 @@ window.onload = () => {
 
     loadSlides();
     startSlideshowTimer();
-
+    
+    // Start monitoring activity immediately when page runs
+    resetInactivityTimer();
 };
 
 // START APP
@@ -811,11 +808,30 @@ function draw() {
 
             plot(res.Left, '#0056b3', 'X', 'Left', 'left');
             plot(res.Right, '#b30000', 'O', 'Rt side', 'right');
-        }function exitToSlideshow() {
+}
 
+function exitToSlideshow() {
     location.reload();
 }
 
+// ============================================================================
+// INACTIVITY TIMEOUT (Returns to Page 0 Slideshow after 3 Minutes of No input)
+// ============================================================================
+let inactivityTimer;
+
+function resetInactivityTimer() {
+    // Clear countdown tracking whenever interactive signals hit the window
+    clearTimeout(inactivityTimer);
+    
+    // Set 3 minute duration (3 * 60 seconds * 1000 milliseconds)
+    inactivityTimer = setTimeout(exitToSlideshow, 3 * 60 * 1000);
+}
+
+// Setup background monitoring for standard user inputs
+const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+activityEvents.forEach(event => {
+    window.addEventListener(event, resetInactivityTimer, true);
+});
 </script>
 
 </body>
