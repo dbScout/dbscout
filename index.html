@@ -197,6 +197,13 @@ canvas {
     border-radius: 20px;
     padding: 20px;
 }
+
+/* Container to handle dynamic Left vs Right alignment */
+.test-header-container {
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
 </style>
 </head>
 <body>
@@ -271,13 +278,15 @@ UNLOCK AUDIO & BEGIN
 <div id="p2" class="page hidden">
 <div class="panel">
 
-<div id="tag" style="font-size:2rem;font-weight:bold;color:#0056b3">
-LEFT EAR
-</div>
+<div id="testHeader" class="test-header-container" style="align-items: flex-start; text-align: left;">
+    <div id="tag" style="font-size:2rem;font-weight:bold;color:#0056b3">
+    LEFT EAR
+    </div>
 
-<h1 id="freq" style="font-size:4rem;color:#ff7e67">
-500 Hz
-</h1>
+    <h1 id="freq" style="font-size:4rem;color:#ff7e67">
+    500 Hz
+    </h1>
+</div>
 
 <div class="slider-box">
 
@@ -537,8 +546,29 @@ function setup() {
 
     osc.start();
 
-    document.getElementById('tag').innerText = ear.toUpperCase() + ' EAR';
-    document.getElementById('freq').innerText = freqs[idx] + ' Hz';
+    const tagEl = document.getElementById('tag');
+    const freqEl = document.getElementById('freq');
+    const headerContainer = document.getElementById('testHeader');
+
+    if (ear === 'Right') {
+        // Style Right Ear labels to look red and align to the right side of the screen
+        tagEl.innerText = 'RIGHT EAR';
+        tagEl.style.color = '#b30000'; 
+        freqEl.innerText = freqs[idx] + ' Hz';
+        freqEl.style.color = '#b30000';
+        
+        headerContainer.style.alignItems = 'flex-end';
+        headerContainer.style.textAlign = 'right';
+    } else {
+        // Keep Left Ear styled blue and aligned to the left side
+        tagEl.innerText = 'LEFT EAR';
+        tagEl.style.color = '#0056b3';
+        freqEl.innerText = freqs[idx] + ' Hz';
+        freqEl.style.color = '#ff7e67';
+        
+        headerContainer.style.alignItems = 'flex-start';
+        headerContainer.style.textAlign = 'left';
+    }
 }
 
 function changeVol(v) {
