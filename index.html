@@ -165,6 +165,21 @@ input[type=range] {
     border-bottom: 1px solid #ddd;
 }
 
+.cal-item-freq {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cal-item-freq strong {
+    font-size: 1.1rem;
+}
+
+.cal-item-target {
+    font-size: 0.9rem;
+    color: #666;
+}
+
 .play-btn {
     background: #50bda1;
     color: white;
@@ -317,7 +332,7 @@ SAVE & NEXT
 <div class="panel">
 
 <h1 style="color:#50bda1">
-Calibration
+Calibration of (70dB HL)
 </h1>
 
 <div id="cal-list"></div>
@@ -515,6 +530,13 @@ let offsets = {
 4000:0
 };
 
+let targets = {
+500: '83.5 dBSPL',
+1000: '77.5 dBSPL',
+2000: '79 dBSPL',
+4000: '79.5 dBSPL'
+};
+
 async function init() {
 
     if(!ctx) {
@@ -677,8 +699,9 @@ function showCal() {
         list.innerHTML += `
         <div class="cal-item">
 
-            <div>
-            <strong>${f}Hz</strong>
+            <div class="cal-item-freq">
+                <strong>${f}Hz</strong>
+                <div class="cal-item-target">Target: ${targets[f]}</div>
             </div>
 
             <div>
