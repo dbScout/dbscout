@@ -45,7 +45,7 @@ body {
     position: absolute;
     inset: 0;
     opacity: 0;
-    transition: opacity 1s ease;
+    transition: opacity 2s ease;
 }
 
 .slide-wrapper.active {
@@ -476,7 +476,7 @@ function startSlideshowTimer() {
 
         wrappers[slideIndex].classList.add('active');
 
-    }, 4000);
+    }, 10000);
 }
 
 window.onload = () => {
