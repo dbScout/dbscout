@@ -134,6 +134,14 @@ h1,h2,h3 {
     background: #333;
 }
 
+.btn.reset {
+    background: #d32f2f;
+    width: auto;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
 .corner-link {
     position: absolute;
     top: 20px;
@@ -218,6 +226,13 @@ canvas {
     display: flex;
     flex-direction: column;
     transition: all 0.3s ease;
+}
+
+.cal-controls-bottom {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
 }
 </style>
 </head>
@@ -337,9 +352,14 @@ Calibration of (70dB HL)
 
 <div id="cal-list"></div>
 
-<button class="btn dark" onclick="backToMain()">
-BACK
-</button>
+<div class="cal-controls-bottom">
+    <button class="btn dark" onclick="backToMain()">
+    BACK
+    </button>
+    <button class="btn reset" onclick="resetCalibration()">
+    🔄 RESET CALIBRATION
+    </button>
+</div>
 
 </div>
 </div>
@@ -498,6 +518,7 @@ window.onload = () => {
 
     loadSlides();
     startSlideshowTimer();
+    loadCalibration();
     
     // Start monitoring activity immediately when page runs
     resetInactivityTimer();
@@ -536,6 +557,36 @@ let targets = {
 2000: '79 dBSPL',
 4000: '79.5 dBSPL'
 };
+
+// ============================================================================
+// CALIBRATION PERSISTENCE (LocalStorage)
+// ============================================================================
+
+function loadCalibration() {
+    freqs.forEach(f => {
+        const saved = localStorage.getItem('dbscout_calibration_' + f);
+        if (saved !== null) {
+            offsets[f] = parseInt(saved);
+            console.log(`Loaded calibration for ${f}Hz: ${offsets[f]}`);
+        }
+    });
+}
+
+function saveCalibration(freq) {
+    localStorage.setItem('dbscout_calibration_' + freq, offsets[freq]);
+    console.log(`Saved calibration for ${freq}Hz: ${offsets[freq]}`);
+}
+
+function resetCalibration() {
+    if (confirm('Are you sure you want to reset all calibration values to 0?')) {
+        freqs.forEach(f => {
+            offsets[f] = 0;
+            localStorage.removeItem('dbscout_calibration_' + f);
+        });
+        console.log('Calibration reset to defaults');
+        showCal(); // Refresh the display
+    }
+}
 
 async function init() {
 
@@ -727,6 +778,9 @@ function adjCal(f, amt) {
     offsets[f] += amt;
 
     document.getElementById('val-' + f).innerText = offsets[f];
+    
+    // SAVE to localStorage
+    saveCalibration(f);
 }
 
 async function testTone(f) {
