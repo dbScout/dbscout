@@ -356,7 +356,7 @@ canvas {
 // Initialize Supabase Client
 const SUPABASE_URL = "https://otffjqbukzlsbptelyjh.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90ZmZqcWJ1a3psc2JwdGVseWpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODA1MzMsImV4cCI6MjA5NDY1NjUzM30.NzHVg4UI50Q-cIb5jdsiv209fmK7ExvEeO-zvo8BzZE";
-const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Extract Kiosk ID from URL parameter (?kiosk_id=kiosk_01). Defaults to 'default_kiosk' if missing.
 const urlParams = new URLSearchParams(window.location.search);
